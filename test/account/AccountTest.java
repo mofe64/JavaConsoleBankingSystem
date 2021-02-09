@@ -74,8 +74,10 @@ class AccountTest {
         assertEquals(transactionAmount, currentAccount.getTransactions().get(0).getTransactionAmount());
         assertEquals(TransactionType.DEBIT, savingsAccount.getTransactions().get(0).getTransactionType());
         assertEquals(transactionAmount, savingsAccount.getTransactions().get(0).getTransactionAmount());
+    }
 
-
+    @Test
+    void testAccountBalanceCanBeCalculated() {
     }
 
 }
