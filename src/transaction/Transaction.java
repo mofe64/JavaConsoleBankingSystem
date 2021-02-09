@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class Transaction {
-    private String sendersAccountNumber;
-    private String recipientsAccountNumber;
-    private TransactionType transactionType;
-    private BigDecimal transactionAmount;
-    private String transactionDescription;
-    private LocalDate transactionDate;
+    private final String sendersAccountNumber;
+    private final String recipientsAccountNumber;
+    private final TransactionType transactionType;
+    private final BigDecimal transactionAmount;
+    private final String transactionDescription;
+    private final LocalDate transactionDate;
     private TransactionStatus transactionStatus;
 
     public Transaction(String sendersAccountNumber, String recipientsAccountNumber, TransactionType transactionType,
@@ -22,5 +22,37 @@ public class Transaction {
         transactionDate = LocalDate.now();
         transactionStatus = TransactionStatus.PENDING;
 
+    }
+
+    public String getTransactionDescription() {
+        return transactionDescription;
+    }
+
+    public TransactionType getTransactionType() {
+        return transactionType;
+    }
+
+    public String getSendersAccountNumber() {
+        return sendersAccountNumber;
+    }
+
+    public BigDecimal getTransactionAmount() {
+        return transactionAmount;
+    }
+
+    public String getRecipientsAccountNumber() {
+        return recipientsAccountNumber;
+    }
+
+    public TransactionStatus getTransactionStatus() {
+        return transactionStatus;
+    }
+
+    public LocalDate getTransactionDate() {
+        return transactionDate;
+    }
+
+    public void setTransactionStatus(TransactionStatus newTransactionStatus) {
+        transactionStatus = newTransactionStatus;
     }
 }
