@@ -29,7 +29,7 @@ class TransactionTest {
     @Test
     void testTransactionFieldsAreInitializedWhenCreated() {
         BigDecimal amount = BigDecimal.valueOf(150.60);
-        Transaction transaction = new Transaction(sendingAccount.getAccountNumber(), receivingAccount.getAccountNumber(),
+        Transaction transaction = new TransferTransaction(sendingAccount.getAccountNumber(), receivingAccount.getAccountNumber(),
                 TransactionType.CREDIT, amount, "Payment");
         assertEquals("Payment", transaction.getTransactionDescription());
         assertEquals(TransactionType.CREDIT, transaction.getTransactionType());
@@ -43,7 +43,7 @@ class TransactionTest {
     @Test
     void testTransactionStatusCanBeChanged() {
         BigDecimal amount = BigDecimal.valueOf(150.60);
-        Transaction transaction = new Transaction(sendingAccount.getAccountNumber(), receivingAccount.getAccountNumber(),
+        Transaction transaction = new TransferTransaction(sendingAccount.getAccountNumber(), receivingAccount.getAccountNumber(),
                 TransactionType.CREDIT, amount, "Payment");
         transaction.setTransactionStatus(TransactionStatus.SUCCESS);
         assertEquals(TransactionStatus.SUCCESS, transaction.getTransactionStatus());

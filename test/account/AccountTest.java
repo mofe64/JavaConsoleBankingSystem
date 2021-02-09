@@ -11,13 +11,14 @@ import java.math.BigInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AccountTest {
-    Account savingsAccount;
-    Account currentAccount;
+    Account sendersSavingsAccount;
+    Account recipientsCurrentAccount;
+
 
     @BeforeEach
     void setUp() {
-        savingsAccount = new SavingsAccount();
-        currentAccount = new CurrentAccount();
+        sendersSavingsAccount = new SavingsAccount();
+        recipientsCurrentAccount = new CurrentAccount();
     }
 
     @AfterEach
@@ -26,58 +27,72 @@ class AccountTest {
 
     @Test
     void testAccountHasAnAccountNumberUponCreation() {
-        assertNotNull(savingsAccount.getAccountNumber());
-        assertNotNull(currentAccount.getAccountNumber());
+        assertNotNull(sendersSavingsAccount.getAccountNumber());
+        assertNotNull(recipientsCurrentAccount.getAccountNumber());
     }
 
     @Test
     void testSavingsAccountNumberHasAnSAPrefix() {
-        String accountNumber = savingsAccount.getAccountNumber();
+        String accountNumber = sendersSavingsAccount.getAccountNumber();
         assertTrue(accountNumber.startsWith("SA"));
     }
 
     @Test
     void testCurrentAccountNumberHasACAPrefix() {
-        String accountNumber = currentAccount.getAccountNumber();
+        String accountNumber = recipientsCurrentAccount.getAccountNumber();
         assertTrue(accountNumber.startsWith("CA"));
     }
 
 
     @Test
     void testAccountHasAnAccountType() {
-        assertNotNull(savingsAccount.getAccountType());
-        assertNotNull(currentAccount.getAccountNumber());
+        assertNotNull(sendersSavingsAccount.getAccountType());
+        assertNotNull(recipientsCurrentAccount.getAccountNumber());
     }
 
     @Test
     void testUserCanCreateSavingsAccount() {
-        assertEquals(AccountType.SAVINGS, savingsAccount.getAccountType());
+        assertEquals(AccountType.SAVINGS, sendersSavingsAccount.getAccountType());
     }
 
     @Test
     void testUserCanCreateCurrentAccount() {
-        assertEquals(AccountType.CURRENT, currentAccount.getAccountType());
+        assertEquals(AccountType.CURRENT, recipientsCurrentAccount.getAccountType());
     }
 
     @Test
     void testAccountCanMakeTransactions() {
         BigDecimal transactionAmount = BigDecimal.valueOf(5000.00);
-        String sendersAccountNumber = savingsAccount.getAccountNumber();
-        String recipientsAccountNumber = currentAccount.getAccountNumber();
-        currentAccount.newTransaction(TransactionType.CREDIT, transactionAmount, sendersAccountNumber,
+        String sendersAccountNumber = sendersSavingsAccount.getAccountNumber();
+        String recipientsAccountNumber = recipientsCurrentAccount.getAccountNumber();
+        recipientsCurrentAccount.newTransferTransaction(TransactionType.CREDIT, transactionAmount, sendersAccountNumber,
                 recipientsAccountNumber, "Paying For The Laptop");
-        savingsAccount.newTransaction(TransactionType.DEBIT, transactionAmount, sendersAccountNumber,
+        sendersSavingsAccount.newTransferTransaction(TransactionType.DEBIT, transactionAmount, sendersAccountNumber,
                 recipientsAccountNumber, "Paying For The Laptop");
-        assertEquals(1, currentAccount.getTransactions().size());
-        assertEquals(1, savingsAccount.getTransactions().size());
-        assertEquals(TransactionType.CREDIT, currentAccount.getTransactions().get(0).getTransactionType());
-        assertEquals(transactionAmount, currentAccount.getTransactions().get(0).getTransactionAmount());
-        assertEquals(TransactionType.DEBIT, savingsAccount.getTransactions().get(0).getTransactionType());
-        assertEquals(transactionAmount, savingsAccount.getTransactions().get(0).getTransactionAmount());
+        assertEquals(1, recipientsCurrentAccount.getTransactions().size());
+        assertEquals(1, sendersSavingsAccount.getTransactions().size());
+        assertEquals(TransactionType.CREDIT, recipientsCurrentAccount.getTransactions().get(0).getTransactionType());
+        assertEquals(transactionAmount, recipientsCurrentAccount.getTransactions().get(0).getTransactionAmount());
+        assertEquals(TransactionType.DEBIT, sendersSavingsAccount.getTransactions().get(0).getTransactionType());
+        assertEquals(transactionAmount, sendersSavingsAccount.getTransactions().get(0).getTransactionAmount());
     }
 
     @Test
     void testAccountBalanceCanBeCalculated() {
+        String sendersAccountNumber = sendersSavingsAccount.getAccountNumber();
+        String recipientsAccountNumber = recipientsCurrentAccount.getAccountNumber();
+        assertEquals(BigDecimal.valueOf(0.00), recipientsCurrentAccount.getBalance());
+        assertEquals(BigDecimal.valueOf(0.00), sendersSavingsAccount.getBalance());
+        BigDecimal depositAmount = BigDecimal.valueOf(50000.00);
+        sendersSavingsAccount.deposit(sendersAccountNumber, depositAmount);
+        assertEquals(depositAmount, sendersSavingsAccount.getBalance());
+        BigDecimal transactionAmount = BigDecimal.valueOf(50000.00);
+        recipientsCurrentAccount.newTransferTransaction(TransactionType.CREDIT, transactionAmount, sendersAccountNumber,
+                recipientsAccountNumber, "Paying For The Laptop");
+        sendersSavingsAccount.newTransferTransaction(TransactionType.DEBIT, transactionAmount, sendersAccountNumber,
+                recipientsAccountNumber, "Paying For The Laptop");
+        assertEquals(transactionAmount, recipientsCurrentAccount.getBalance());
+        assertEquals(BigDecimal.valueOf(0.00), sendersSavingsAccount.getBalance());
     }
 
 }
