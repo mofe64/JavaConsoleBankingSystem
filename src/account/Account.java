@@ -4,13 +4,14 @@ import transaction.Transaction;
 import transaction.TransactionType;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Account {
     String accountNumber;
-    List<Transaction> transactions;
+    List<Transaction> transactions = new ArrayList<>();
     AccountType accountType;
 
 
@@ -21,7 +22,12 @@ public abstract class Account {
     public abstract AccountType getAccountType();
 
 
-    public void newTransaction(TransactionType type, BigDecimal transactionAmount, String accountNumber) {
+    public void newTransaction(TransactionType transactionType, BigDecimal transactionAmount, String sendersAccountNumber,
+                               String recipientsAccountNumber, String transactionDescription) {
+        Transaction newTransaction =
+                new Transaction(sendersAccountNumber, recipientsAccountNumber, transactionType, transactionAmount,
+                        transactionDescription);
+        transactions.add(newTransaction);
     }
 
     public List<Transaction> getTransactions() {
