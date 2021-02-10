@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionTest {
-    Transaction transaction;
     Account receivingAccount;
     Account sendingAccount;
 
@@ -29,7 +28,7 @@ class TransactionTest {
     @Test
     void testTransactionFieldsAreInitializedWhenCreated() {
         BigDecimal amount = BigDecimal.valueOf(150.60);
-        Transaction transaction = new TransferTransaction(sendingAccount.getAccountNumber(), receivingAccount.getAccountNumber(),
+        Transactable transaction = new TransferTransaction(sendingAccount.getAccountNumber(), receivingAccount.getAccountNumber(),
                 TransactionType.CREDIT, amount, "Payment");
         assertEquals("Payment", transaction.getTransactionDescription());
         assertEquals(TransactionType.CREDIT, transaction.getTransactionType());
@@ -43,12 +42,25 @@ class TransactionTest {
     @Test
     void testTransactionStatusCanBeChanged() {
         BigDecimal amount = BigDecimal.valueOf(150.60);
-        Transaction transaction = new TransferTransaction(sendingAccount.getAccountNumber(), receivingAccount.getAccountNumber(),
+        Transactable transfer = new TransferTransaction(sendingAccount.getAccountNumber(), receivingAccount.getAccountNumber(),
                 TransactionType.CREDIT, amount, "Payment");
-        transaction.setTransactionStatus(TransactionStatus.SUCCESS);
-        assertEquals(TransactionStatus.SUCCESS, transaction.getTransactionStatus());
-        transaction.setTransactionStatus(TransactionStatus.FAILED);
-        assertEquals(TransactionStatus.FAILED, transaction.getTransactionStatus());
+        transfer.setTransactionStatus(TransactionStatus.SUCCESS);
+        assertEquals(TransactionStatus.SUCCESS, transfer.getTransactionStatus());
+        transfer.setTransactionStatus(TransactionStatus.FAILED);
+        assertEquals(TransactionStatus.FAILED, transfer.getTransactionStatus());
+    }
+
+    @Test
+    void testTransactionCanBeRolledBack() {
+        BigDecimal transferAmount = BigDecimal.valueOf(100_000.0);
+        sendingAccount.deposit(sendingAccount.getAccountNumber(), BigDecimal.valueOf(250_000.00));
+        sendingAccount.newTransferTransaction(TransactionType.DEBIT, transferAmount, sendingAccount.getAccountNumber(),
+                receivingAccount.getAccountNumber(), "Payment");
+        receivingAccount.newTransferTransaction(TransactionType.CREDIT, transferAmount, sendingAccount.getAccountNumber(),
+                receivingAccount.getAccountNumber(), "Payment");
+        assertEquals(transferAmount, receivingAccount.getBalance());
+        assertEquals(BigDecimal.valueOf(150_000.00), sendingAccount.getBalance());
+
     }
 
 }

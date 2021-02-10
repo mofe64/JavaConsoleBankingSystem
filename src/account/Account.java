@@ -10,7 +10,7 @@ import java.util.List;
 
 public abstract class Account {
     String accountNumber;
-    List<Transaction> transactions = new ArrayList<>();
+    List<Transactable> transactions = new ArrayList<>();
     AccountType accountType;
 
 
@@ -23,7 +23,7 @@ public abstract class Account {
 
     public void newTransferTransaction(TransactionType transactionType, BigDecimal transactionAmount, String sendersAccountNumber,
                                        String recipientsAccountNumber, String transactionDescription) {
-        Transaction newTransaction =
+        Transactable newTransaction =
                 new TransferTransaction(sendersAccountNumber, recipientsAccountNumber, transactionType, transactionAmount,
                         transactionDescription);
         newTransaction.setTransactionStatus(TransactionStatus.SUCCESS);
@@ -32,23 +32,27 @@ public abstract class Account {
 
 
     public void withdraw(String customerAccountNumber, BigDecimal withdrawAmount) {
-        Transaction newTransaction = new WithdrawTransaction(customerAccountNumber, withdrawAmount);
+        Transactable newTransaction = new WithdrawTransaction(customerAccountNumber, withdrawAmount);
         transactions.add(newTransaction);
     }
 
     public void deposit(String customerAccountNumber, BigDecimal depositAmount) {
-        Transaction newTransaction = new DepositTransaction(customerAccountNumber, depositAmount);
+        Transactable newTransaction = new DepositTransaction(customerAccountNumber, depositAmount);
         transactions.add(newTransaction);
     }
 
-    public List<Transaction> getTransactions() {
+    public void addTransaction(Transactable transaction) {
+        transactions.add(transaction);
+    }
+
+    public List<Transactable> getTransactions() {
         return transactions;
     }
 
 
     public BigDecimal getBalance() {
         BigDecimal balance = BigDecimal.valueOf(0.00);
-        for (Transaction transactionRecord : transactions) {
+        for (Transactable transactionRecord : transactions) {
             if (transactionRecord instanceof DepositTransaction) {
                 balance = balance.add(transactionRecord.getTransactionAmount());
             } else if (transactionRecord.getTransactionStatus().equals(TransactionStatus.SUCCESS)) {
@@ -76,5 +80,6 @@ public abstract class Account {
         }
         return balance;
     }
+
 
 }

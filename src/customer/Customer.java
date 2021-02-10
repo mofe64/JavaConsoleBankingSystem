@@ -12,9 +12,9 @@ public class Customer {
     private String lastName;
     private String email;
     private String phoneNumber;
-    private int bvn;
+    private final int bvn;
     private String address;
-    private List<Account> accounts;
+    private final List<Account> accounts;
 
     public Customer(String firstName, String lastName, int bvn, String phoneNumber, String address, String accountType) {
         this.firstName = firstName;
