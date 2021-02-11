@@ -41,10 +41,40 @@ class TransactionTest {
         assertEquals(TransactionStatus.PENDING, transaction.getTransactionStatus());
         assertEquals(amount, transaction.getTransactionAmount());
         assertNotNull(transaction.getTransactionDate());
+        assertNotNull(transaction.getTransactionId());
     }
 
     @Test
-    void testTransactionStatusCanBeChanged() {
+    void testWithdrawTransactionDetailsCanBeRetrieved() throws InsufficientFundsException {
+        transactionManager.makeDeposit(sendingAccount, BigDecimal.valueOf(100.00));
+        Transactable withdrawTransaction = transactionManager.makeWithdrawal(sendingAccount, BigDecimal.valueOf(100.0));
+        assertEquals(BigDecimal.valueOf(100.0), withdrawTransaction.getTransactionAmount());
+        assertEquals(TransactionStatus.SUCCESS, withdrawTransaction.getTransactionStatus());
+        assertEquals(TransactionType.DEBIT, withdrawTransaction.getTransactionType());
+        assertNotNull(withdrawTransaction.getTransactionId());
+        assertEquals("Withdrawal Transaction", withdrawTransaction.getTransactionDescription());
+        assertEquals(sendingAccount.getAccountNumber(), withdrawTransaction.getSendersAccountNumber());
+        assertEquals("", withdrawTransaction.getRecipientsAccountNumber());
+        assertNotNull(withdrawTransaction.getTransactionDate());
+    }
+
+
+    @Test
+    void testDepositTransactionDetailsCanBeRetrieved() throws IllegalArgumentException {
+        Transactable depositTransaction = transactionManager.makeDeposit(sendingAccount, BigDecimal.valueOf(100.0));
+        assertEquals(BigDecimal.valueOf(100.0), depositTransaction.getTransactionAmount());
+        assertEquals(TransactionStatus.SUCCESS, depositTransaction.getTransactionStatus());
+        assertEquals(TransactionType.CREDIT, depositTransaction.getTransactionType());
+        assertNotNull(depositTransaction.getTransactionId());
+        assertEquals("Deposit Transaction", depositTransaction.getTransactionDescription());
+        assertEquals("", depositTransaction.getSendersAccountNumber());
+        assertEquals(sendingAccount.getAccountNumber() , depositTransaction.getRecipientsAccountNumber());
+        assertNotNull(depositTransaction.getTransactionDate());
+    }
+
+
+    @Test
+    void testTransactionStatusCanBeChanged() throws InsufficientFundsException {
         BigDecimal amount = BigDecimal.valueOf(150.60);
         Transactable transfer = new TransferTransaction(sendingAccount.getAccountNumber(), receivingAccount.getAccountNumber(),
                 TransactionType.CREDIT, amount, "Payment");
@@ -52,6 +82,14 @@ class TransactionTest {
         assertEquals(TransactionStatus.SUCCESS, transfer.getTransactionStatus());
         transfer.setTransactionStatus(TransactionStatus.FAILED);
         assertEquals(TransactionStatus.FAILED, transfer.getTransactionStatus());
+        DepositTransaction depositTransaction = transactionManager.makeDeposit(sendingAccount, BigDecimal.valueOf(100.00));
+        WithdrawTransaction withdrawTransaction = transactionManager.makeWithdrawal(sendingAccount, BigDecimal.valueOf(50.00));
+        assertEquals(TransactionStatus.SUCCESS, withdrawTransaction.getTransactionStatus());
+        assertEquals(TransactionStatus.SUCCESS, depositTransaction.getTransactionStatus());
+        withdrawTransaction.setTransactionStatus(TransactionStatus.FAILED);
+        depositTransaction.setTransactionStatus(TransactionStatus.FAILED);
+        assertEquals(TransactionStatus.FAILED, withdrawTransaction.getTransactionStatus());
+        assertEquals(TransactionStatus.FAILED, depositTransaction.getTransactionStatus());
     }
 
     @Test

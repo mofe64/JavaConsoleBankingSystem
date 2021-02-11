@@ -13,39 +13,52 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionManagerTest {
-    Account account;
+    Account accountOne;
+    Account accountTwo;
     TransactionManager transactionManager;
-    Database database = Database.getDatabaseInstance();
+
 
     @BeforeEach
     void setUp() {
-        database.nukeDatabase();
-        account = new SavingsAccount();
+        accountOne = new SavingsAccount();
+        accountTwo = new SavingsAccount();
         transactionManager = new TransactionManager();
-        transactionManager.makeDeposit(account, BigDecimal.valueOf(10_000));
+        transactionManager.makeDeposit(accountOne, BigDecimal.valueOf(10_000));
     }
 
     @AfterEach
     void tearDown() {
-        database.nukeDatabase();
     }
 
     @Test
     void testTransactionManagerCanMakeAWithdrawalTransaction() throws InsufficientFundsException {
-        transactionManager.makeWithdrawal(account, BigDecimal.valueOf(5_000));
-        assertEquals(BigDecimal.valueOf(5_000.0), account.getBalance());
+        transactionManager.makeWithdrawal(accountOne, BigDecimal.valueOf(5_000));
+        assertEquals(BigDecimal.valueOf(5_000.0), accountOne.getBalance());
     }
 
     @Test
     void testTransactionManagerCanMakeADepositTransaction() {
-        transactionManager.makeDeposit(account, BigDecimal.valueOf(10_000));
-        assertEquals(BigDecimal.valueOf(20_000.0), account.getBalance());
+        transactionManager.makeDeposit(accountOne, BigDecimal.valueOf(10_000));
+        assertEquals(BigDecimal.valueOf(20_000.0), accountOne.getBalance());
 
     }
 
     @Test
     void testTransactionManagerThrowsInsufficientFundsExceptionWhenUserTriesToWithdrawMoreThanBalance() {
-        assertThrows(InsufficientFundsException.class, () -> transactionManager.makeWithdrawal(account, BigDecimal.valueOf(100_000)));
+        assertThrows(InsufficientFundsException.class, () -> transactionManager.makeWithdrawal(accountOne, BigDecimal.valueOf(100_000)));
+    }
+
+    @Test
+    void testTransactionManagerThrowsIllegalArgumentExceptionWhenUserTriesToPerformAnyTransactionWithNegativeValues() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            transactionManager.makeWithdrawal(accountOne, BigDecimal.valueOf(-100_00.0));
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            transactionManager.makeDeposit(accountOne, BigDecimal.valueOf(-100_000.0));
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            transactionManager.makeTransfer(accountOne, accountTwo, BigDecimal.valueOf(-100_000.00), "Test");
+        });
     }
 
     @Test

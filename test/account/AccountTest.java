@@ -59,6 +59,14 @@ class AccountTest {
     }
 
     @Test
+    void testAccountCanGetAListOfALLTransactions() throws InsufficientFundsException {
+        transactionManager.makeDeposit(sendersAccount, BigDecimal.valueOf(100_000.0));
+        BigDecimal transferAmount = BigDecimal.valueOf(50_000.00);
+        transactionManager.makeTransfer(sendersAccount, recipientsAccount, transferAmount, "Payment For Laptop");
+        assertEquals(2, sendersAccount.getTransactions().size());
+    }
+
+    @Test
     void testUserCanCreateSavingsAccount() {
         assertEquals(AccountType.SAVINGS, sendersAccount.getAccountType());
     }

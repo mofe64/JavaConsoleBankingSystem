@@ -83,8 +83,8 @@ public class Database {
         return customers;
     }
 
-    public void deleteCustomer(String accountNumber) {
-    }
+//    public void deleteCustomer(String accountNumber) {
+//    }
 
     public void nukeDatabase() {
         transactions.clear();

@@ -13,6 +13,9 @@ public class TransactionManager {
 
     public WithdrawTransaction makeWithdrawal(Account withdrawingAccount, BigDecimal amountToWithdraw) throws InsufficientFundsException {
         BigDecimal currentAccountBalance = withdrawingAccount.getBalance();
+        if (amountToWithdraw.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("You can only deposit Positive Amounts");
+        }
         if (amountToWithdraw.doubleValue() > currentAccountBalance.doubleValue()) {
             throw new InsufficientFundsException();
         }
@@ -33,12 +36,13 @@ public class TransactionManager {
     public List<Transactable> makeTransfer(Account sendersAccount, Account recipientsAccount, BigDecimal transactionAmount,
                                            String transactionDescription) throws IllegalArgumentException, InsufficientFundsException {
         BigDecimal currentAccountBalance = sendersAccount.getBalance();
-        if (transactionAmount.doubleValue() > currentAccountBalance.doubleValue()) {
-            throw new InsufficientFundsException();
-        }
         if (transactionAmount.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("You can only transfer Positive Amounts");
         }
+        if (transactionAmount.doubleValue() > currentAccountBalance.doubleValue()) {
+            throw new InsufficientFundsException();
+        }
+
         Transactable debitTransferTransaction = new TransferTransaction(sendersAccount.getAccountNumber(), recipientsAccount.getAccountNumber(),
                 TransactionType.DEBIT, transactionAmount, transactionDescription);
         debitTransferTransaction.setTransactionStatus(TransactionStatus.SUCCESS);
