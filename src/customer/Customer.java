@@ -74,12 +74,7 @@ public class Customer {
     }
 
     public String getEmail() {
-        if (email != null) {
-            return email;
-        } else {
-            return "No Email On Record";
-        }
-
+        return email;
     }
 
     public void setEmail(String newEmail) {

@@ -70,9 +70,13 @@ public class Database {
         customers.add(customer);
     }
 
-    public Optional<Customer> getCustomer(String accountNumber) {
+    public Optional<Customer> getCustomerByAccountNumber(String accountNumber) {
         return customers.stream().filter(customer -> customer.getAccounts().stream()
                 .anyMatch(account -> account.getAccountNumber().equalsIgnoreCase(accountNumber))).findFirst();
+    }
+
+    public Optional<Customer> getCustomerByCustomerId(String customerId) {
+        return customers.stream().filter(customer -> customer.getCustomerId().equalsIgnoreCase(customerId)).findFirst();
     }
 
     public List<Customer> getAllCustomers() {
@@ -85,5 +89,6 @@ public class Database {
     public void nukeDatabase() {
         transactions.clear();
         accounts.clear();
+        customers.clear();
     }
 }

@@ -3,6 +3,7 @@ package database;
 import account.Account;
 import account.CurrentAccount;
 import account.SavingsAccount;
+import customer.Customer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,9 +18,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DatabaseTest {
     Database database = Database.getDatabaseInstance();
+    Customer customerOne;
+    Customer customerTwo;
 
     @BeforeEach
     void setUp() {
+        customerOne = new Customer("Max", "James", "testEmail", "09065360361", 1234,
+                "semicolon", "savings");
+        customerTwo = new Customer("Max2", "James", "testEmail", "09065360361",
+                1234, "address", "current");
     }
 
     @AfterEach
@@ -99,8 +106,43 @@ class DatabaseTest {
         assertEquals(4, database.getAllTransaction().size());
         assertEquals(2, database.getAllAccounts().size());
         database.deleteAccount(account.getAccountNumber());
-        assertEquals(2,database.getAllTransaction().size());
+        assertEquals(2, database.getAllTransaction().size());
     }
 
+    @Test
+    void testDatabaseCanAddACustomer() {
+        Customer customerOne = new Customer("Max0", "James", "testEmail", "09065360361", 1234,
+                "semicolon", "savings");
+        database.addCustomer(customerOne);
+        assertEquals(1, database.getAllCustomers().size());
+    }
+
+    @Test
+    void testDatabaseCanReturnAllCustomers() {
+
+        database.addCustomer(customerOne);
+        database.addCustomer(customerTwo);
+        assertEquals(2, database.getAllCustomers().size());
+    }
+
+    @Test
+    void testDatabaseCanFindCustomerByCustomerId() {
+        database.addCustomer(customerOne);
+        database.addCustomer(customerTwo);
+        String customerId = customerOne.getCustomerId();
+        Optional<Customer> customerOptional = database.getCustomerByCustomerId(customerId);
+        assertTrue(customerOptional.isPresent());
+        assertEquals(customerOne, customerOptional.get());
+    }
+
+    @Test
+    void testDatabaseCanFindCustomerByAccountNumber() {
+        database.addCustomer(customerOne);
+        database.addCustomer(customerTwo);
+        String customerOneAccountNumber = customerOne.getAccounts().get(0).getAccountNumber();
+        Optional<Customer> customerOptional = database.getCustomerByAccountNumber(customerOneAccountNumber);
+        assertTrue(customerOptional.isPresent());
+        assertEquals(customerOne, customerOptional.get());
+    }
 
 }

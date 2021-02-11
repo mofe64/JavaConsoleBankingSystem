@@ -1,5 +1,6 @@
 package customer;
 
+import account.Account;
 import account.AccountType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,8 @@ class CustomerTest {
 
     @BeforeEach
     void setUp() {
-        customerOne = new Customer("Max", "James", 1234, "09065360361", "address", "savings");
+        customerOne = new Customer("Max", "James", "testEmail", "09065360361", 1234,
+                "semicolon", "savings");
         customerTwo = new Customer("Max", "James", "testEmail", "09065360361",
                 1234, "address", "current");
     }
@@ -28,7 +30,7 @@ class CustomerTest {
         assertEquals("James", customerOne.getLastName());
         assertEquals(1234, customerOne.getBvn());
         assertEquals("09065360361", customerOne.getPhoneNumber());
-        assertEquals("address", customerOne.getAddress());
+        assertEquals("semicolon", customerOne.getAddress());
         assertNotNull(customerOne.getAccounts());
         assertEquals("testEmail", customerTwo.getEmail());
         assertEquals(AccountType.SAVINGS, customerOne.getAccounts().get(0).getAccountType());
@@ -54,6 +56,17 @@ class CustomerTest {
         customerOne.newAccount("current");
         assertEquals(2, customerOne.getAccounts().size());
         assertEquals(AccountType.CURRENT, customerOne.getAccounts().get(1).getAccountType());
+    }
+
+    @Test
+    void testCustomerIdIsGeneratedWhenACustomerObjectIsCreated() {
+        assertNotNull(customerOne.getCustomerId());
+    }
+
+    @Test
+    void testCustomerIdIsPrefixedWithDefaultCustomerAccountNumber() {
+        Account defaultAccount = customerOne.getAccounts().get(0);
+        assertTrue(customerOne.getCustomerId().startsWith(defaultAccount.getAccountNumber()));
     }
 
 }
