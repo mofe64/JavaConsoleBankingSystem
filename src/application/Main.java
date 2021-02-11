@@ -6,11 +6,10 @@ import database.Database;
 import exceptions.InsufficientFundsException;
 import transaction.Transactable;
 import transaction.TransactionManager;
-import transaction.TransactionType;
+
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -79,7 +78,9 @@ public class Main {
         Customer customer = new Customer(firstName, lastName, email, phoneNumber, bvn, address, accountType);
         currentCustomer = customer;
         database.addCustomer(customer);
+        database.addAccount(currentCustomer.getAccounts().get(0));
         List<Account> customerAccounts = currentCustomer.getAccounts();
+
         System.out.println();
         System.out.println("Account created successfully\n\nHere are all the details for your new " + accountType + " accounts ");
         for (Account customerAccount : customerAccounts) {

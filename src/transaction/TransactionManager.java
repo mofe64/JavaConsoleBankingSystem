@@ -1,6 +1,7 @@
 package transaction;
 
 import account.Account;
+import database.Database;
 import exceptions.InsufficientFundsException;
 
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import java.util.List;
 
 
 public class TransactionManager {
+
     public WithdrawTransaction makeWithdrawal(Account withdrawingAccount, BigDecimal amountToWithdraw) throws InsufficientFundsException {
         BigDecimal currentAccountBalance = withdrawingAccount.getBalance();
         if (amountToWithdraw.doubleValue() > currentAccountBalance.doubleValue()) {
@@ -45,10 +47,20 @@ public class TransactionManager {
                 TransactionType.CREDIT, transactionAmount, transactionDescription);
         creditTransferTransaction.setTransactionStatus(TransactionStatus.SUCCESS);
         recipientsAccount.addTransaction(creditTransferTransaction);
+        //
         List<Transactable> transactions = new ArrayList<>();
         transactions.add(debitTransferTransaction);
         transactions.add(creditTransferTransaction);
         return transactions;
+    }
+
+    public void rollBackTransaction(Transactable transaction) {
+        transaction.rollbackTransaction();
+    }
+
+    public void rollBackTransaction(Transactable creditTransaction, Transactable debitTransaction) {
+        creditTransaction.rollbackTransaction();
+        debitTransaction.rollbackTransaction();
     }
 }
 

@@ -3,22 +3,26 @@ package transaction;
 import account.Account;
 import account.CurrentAccount;
 import account.SavingsAccount;
+import exceptions.InsufficientFundsException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionTest {
     Account receivingAccount;
     Account sendingAccount;
+    TransactionManager transactionManager;
 
     @BeforeEach
     void setUp() {
         receivingAccount = new SavingsAccount();
-        sendingAccount = new CurrentAccount();
+        sendingAccount = new SavingsAccount();
+        transactionManager = new TransactionManager();
     }
 
     @AfterEach
@@ -51,16 +55,15 @@ class TransactionTest {
     }
 
     @Test
-    void testTransactionCanBeRolledBack() {
+    void testTransactionCanBeRolledBack() throws InsufficientFundsException {
+        transactionManager.makeDeposit(sendingAccount, BigDecimal.valueOf(250_000.00));
         BigDecimal transferAmount = BigDecimal.valueOf(100_000.0);
-        sendingAccount.deposit(sendingAccount.getAccountNumber(), BigDecimal.valueOf(250_000.00));
-        sendingAccount.newTransferTransaction(TransactionType.DEBIT, transferAmount, sendingAccount.getAccountNumber(),
-                receivingAccount.getAccountNumber(), "Payment");
-        receivingAccount.newTransferTransaction(TransactionType.CREDIT, transferAmount, sendingAccount.getAccountNumber(),
-                receivingAccount.getAccountNumber(), "Payment");
+        List<Transactable> transactions = transactionManager.makeTransfer(sendingAccount, receivingAccount, transferAmount, "Payment");
         assertEquals(transferAmount, receivingAccount.getBalance());
         assertEquals(BigDecimal.valueOf(150_000.00), sendingAccount.getBalance());
-
+        transactionManager.rollBackTransaction(transactions.get(1), transactions.get(0));
+        assertEquals(BigDecimal.valueOf(250_000.00), sendingAccount.getBalance());
+        assertEquals(BigDecimal.valueOf(0.0), receivingAccount.getBalance());
     }
 
 }
