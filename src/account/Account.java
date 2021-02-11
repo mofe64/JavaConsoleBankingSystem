@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class Account {
     String accountNumber;
@@ -51,33 +52,43 @@ public abstract class Account {
 
 
     public BigDecimal getBalance() {
-        BigDecimal balance = BigDecimal.valueOf(0.00);
-        for (Transactable transactionRecord : transactions) {
-            if (transactionRecord instanceof DepositTransaction) {
-                balance = balance.add(transactionRecord.getTransactionAmount());
-            } else if (transactionRecord.getTransactionStatus().equals(TransactionStatus.SUCCESS)) {
-                if (transactionRecord instanceof WithdrawTransaction) {
-                    balance = balance.subtract(transactionRecord.getTransactionAmount());
-                } else {
-                    if (transactionRecord.getTransactionType().equals(TransactionType.CREDIT)) {
-                        balance = balance.add(transactionRecord.getTransactionAmount());
-                    } else {
-                        balance = balance.subtract(transactionRecord.getTransactionAmount());
-                    }
-                }
-            } else if (transactionRecord.getTransactionStatus().equals(TransactionStatus.ROLLBACK)) {
-                if (transactionRecord instanceof WithdrawTransaction) {
-                    balance = balance.add(transactionRecord.getTransactionAmount());
-                }
-                if (transactionRecord instanceof TransferTransaction) {
-                    if (transactionRecord.getTransactionType().equals(TransactionType.CREDIT)) {
-                        balance = balance.subtract(transactionRecord.getTransactionAmount());
-                    } else {
-                        balance = balance.add(transactionRecord.getTransactionAmount());
-                    }
-                }
+        BigDecimal balance;
+        final double[] balanceValue = {0.0};
+
+        transactions.stream()
+                .filter(transactionRecord -> transactionRecord instanceof DepositTransaction &&
+                        transactionRecord.getTransactionStatus().equals(TransactionStatus.SUCCESS)).forEach(transactable -> {
+            balanceValue[0] += transactable.getTransactionAmount().doubleValue();
+        });
+
+        transactions.stream()
+                .filter(transactionRecord -> transactionRecord instanceof WithdrawTransaction &&
+                        transactionRecord.getTransactionStatus().equals(TransactionStatus.SUCCESS)).forEach(transactable -> {
+            balanceValue[0] -= transactable.getTransactionAmount().doubleValue();
+        });
+
+        transactions.stream()
+                .filter(transactionRecord -> transactionRecord.getTransactionStatus().equals(TransactionStatus.ROLLBACK)).forEach(transactable -> {
+            if (transactable.getTransactionType().equals(TransactionType.CREDIT)) {
+                balanceValue[0] -= transactable.getTransactionAmount().doubleValue();
+            } else {
+                balanceValue[0] += transactable.getTransactionAmount().doubleValue();
             }
-        }
+        });
+
+        transactions.stream()
+                .filter(transactionRecord -> transactionRecord instanceof TransferTransaction &&
+                        transactionRecord.getTransactionType().equals(TransactionType.CREDIT)).forEach(transactable -> {
+            balanceValue[0] += transactable.getTransactionAmount().doubleValue();
+        });
+
+        transactions.stream()
+                .filter(transactionRecord -> transactionRecord instanceof TransferTransaction &&
+                        transactionRecord.getTransactionType().equals(TransactionType.DEBIT)).forEach(transactable -> {
+            balanceValue[0] -= transactable.getTransactionAmount().doubleValue();
+        });
+
+        balance = BigDecimal.valueOf(balanceValue[0]);
         return balance;
     }
 
