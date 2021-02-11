@@ -23,7 +23,7 @@ public class DepositTransaction implements Transactable {
             stringBuilder.append(secureRandom.nextInt(9));
         }
         this.transactionId = stringBuilder.toString();
-        this.accountNumberToDebit = null;
+        this.accountNumberToDebit = "";
         this.accountNumberToCredit = accountNumberToCredit;
         this.transactionType = TransactionType.CREDIT;
         this.transactionAmount = transactionAmount;

@@ -24,7 +24,7 @@ public class WithdrawTransaction implements Transactable {
         }
         this.transactionId = stringBuilder.toString();
         this.accountNumberToDebit = accountNumberToDebit;
-        this.accountNumberToCredit = null;
+        this.accountNumberToCredit = "";
         this.transactionType = TransactionType.DEBIT;
         this.transactionAmount = transactionAmount;
         this.transactionDescription = "Withdrawal Transaction";

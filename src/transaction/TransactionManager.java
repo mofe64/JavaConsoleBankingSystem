@@ -4,26 +4,32 @@ import account.Account;
 import exceptions.InsufficientFundsException;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class TransactionManager {
-    public void makeWithdrawal(Account withdrawingAccount, BigDecimal amountToWithdraw) throws InsufficientFundsException {
+    public WithdrawTransaction makeWithdrawal(Account withdrawingAccount, BigDecimal amountToWithdraw) throws InsufficientFundsException {
         BigDecimal currentAccountBalance = withdrawingAccount.getBalance();
         if (amountToWithdraw.doubleValue() > currentAccountBalance.doubleValue()) {
             throw new InsufficientFundsException();
         }
-        withdrawingAccount.addTransaction(new WithdrawTransaction(withdrawingAccount.getAccountNumber(), amountToWithdraw));
+        WithdrawTransaction transaction = new WithdrawTransaction(withdrawingAccount.getAccountNumber(), amountToWithdraw);
+        withdrawingAccount.addTransaction(transaction);
+        return transaction;
     }
 
-    public void makeDeposit(Account depositingAccount, BigDecimal depositAmount) throws IllegalArgumentException {
+    public DepositTransaction makeDeposit(Account depositingAccount, BigDecimal depositAmount) throws IllegalArgumentException {
         if (depositAmount.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("You can only deposit Positive Amounts");
         }
-        depositingAccount.addTransaction(new DepositTransaction(depositingAccount.getAccountNumber(), depositAmount));
+        DepositTransaction transaction = new DepositTransaction(depositingAccount.getAccountNumber(), depositAmount);
+        depositingAccount.addTransaction(transaction);
+        return transaction;
     }
 
-    public void makeTransfer(Account sendersAccount, Account recipientsAccount, BigDecimal transactionAmount,
-                             String transactionDescription) throws IllegalArgumentException,InsufficientFundsException {
+    public List<Transactable> makeTransfer(Account sendersAccount, Account recipientsAccount, BigDecimal transactionAmount,
+                                           String transactionDescription) throws IllegalArgumentException, InsufficientFundsException {
         BigDecimal currentAccountBalance = sendersAccount.getBalance();
         if (transactionAmount.doubleValue() > currentAccountBalance.doubleValue()) {
             throw new InsufficientFundsException();
@@ -39,6 +45,10 @@ public class TransactionManager {
                 TransactionType.CREDIT, transactionAmount, transactionDescription);
         creditTransferTransaction.setTransactionStatus(TransactionStatus.SUCCESS);
         recipientsAccount.addTransaction(creditTransferTransaction);
+        List<Transactable> transactions = new ArrayList<>();
+        transactions.add(debitTransferTransaction);
+        transactions.add(creditTransferTransaction);
+        return transactions;
     }
 }
 

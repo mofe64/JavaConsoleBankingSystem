@@ -4,6 +4,7 @@ import account.Account;
 import account.CurrentAccount;
 import account.SavingsAccount;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,20 +16,8 @@ public class Customer {
     private final int bvn;
     private String address;
     private final List<Account> accounts;
+    private final String customerId;
 
-    public Customer(String firstName, String lastName, int bvn, String phoneNumber, String address, String accountType) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.bvn = bvn;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.accounts = new ArrayList<>();
-        if (accountType.equalsIgnoreCase("savings")) {
-            accounts.add(new SavingsAccount());
-        } else {
-            accounts.add(new CurrentAccount());
-        }
-    }
 
     public Customer(String firstName, String lastName, String email, String phoneNumber, int bvn, String address,
                     String accountType) {
@@ -39,13 +28,26 @@ public class Customer {
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.accounts = new ArrayList<>();
+        Account customerDefaultAccount;
         if (accountType.equalsIgnoreCase("savings")) {
-            accounts.add(new SavingsAccount());
+            customerDefaultAccount = new SavingsAccount();
         } else {
-            accounts.add(new CurrentAccount());
+            customerDefaultAccount = new CurrentAccount();
         }
+        accounts.add(customerDefaultAccount);
+        String customerIdPrefix = customerDefaultAccount.getAccountNumber();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(customerIdPrefix);
+        for (int i = 0; i < 5; i++) {
+            SecureRandom secureRandom = new SecureRandom();
+            stringBuilder.append(secureRandom.nextInt(10));
+        }
+        customerId = stringBuilder.toString();
     }
 
+    public String getCustomerId() {
+        return customerId;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -100,11 +102,14 @@ public class Customer {
         this.address = newAddress;
     }
 
-    public void newAccount(String type) {
+    public Account newAccount(String type) {
+        Account newAccount;
         if (type.equalsIgnoreCase("savings")) {
-            accounts.add(new SavingsAccount());
+            newAccount = new SavingsAccount();
         } else {
-            accounts.add(new CurrentAccount());
+            newAccount = new CurrentAccount();
         }
+        accounts.add(newAccount);
+        return newAccount;
     }
 }
