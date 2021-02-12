@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 
-public class WithdrawTransaction implements Transactable {
+public class DebitTransaction implements Transactable {
     final String accountNumberToDebit;
     final String accountNumberToCredit;
     final TransactionType transactionType;
@@ -14,7 +14,7 @@ public class WithdrawTransaction implements Transactable {
     final String transactionId;
     TransactionStatus transactionStatus;
 
-    public WithdrawTransaction(String accountNumberToDebit, BigDecimal transactionAmount) {
+    public DebitTransaction(String accountNumberToDebit, BigDecimal transactionAmount) {
         StringBuilder stringBuilder = new StringBuilder();
         SecureRandom secureRandom = new SecureRandom();
         String transactionIdPrefix = "WT";

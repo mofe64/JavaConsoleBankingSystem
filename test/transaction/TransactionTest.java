@@ -1,7 +1,6 @@
 package transaction;
 
 import account.Account;
-import account.CurrentAccount;
 import account.SavingsAccount;
 import exceptions.InsufficientFundsException;
 import org.junit.jupiter.api.AfterEach;
@@ -82,14 +81,14 @@ class TransactionTest {
         assertEquals(TransactionStatus.SUCCESS, transfer.getTransactionStatus());
         transfer.setTransactionStatus(TransactionStatus.FAILED);
         assertEquals(TransactionStatus.FAILED, transfer.getTransactionStatus());
-        DepositTransaction depositTransaction = transactionManager.makeDeposit(sendingAccount, BigDecimal.valueOf(100.00));
-        WithdrawTransaction withdrawTransaction = transactionManager.makeWithdrawal(sendingAccount, BigDecimal.valueOf(50.00));
-        assertEquals(TransactionStatus.SUCCESS, withdrawTransaction.getTransactionStatus());
-        assertEquals(TransactionStatus.SUCCESS, depositTransaction.getTransactionStatus());
-        withdrawTransaction.setTransactionStatus(TransactionStatus.FAILED);
-        depositTransaction.setTransactionStatus(TransactionStatus.FAILED);
-        assertEquals(TransactionStatus.FAILED, withdrawTransaction.getTransactionStatus());
-        assertEquals(TransactionStatus.FAILED, depositTransaction.getTransactionStatus());
+        CreditTransaction creditTransaction = transactionManager.makeDeposit(sendingAccount, BigDecimal.valueOf(100.00));
+        DebitTransaction debitTransaction = transactionManager.makeWithdrawal(sendingAccount, BigDecimal.valueOf(50.00));
+        assertEquals(TransactionStatus.SUCCESS, debitTransaction.getTransactionStatus());
+        assertEquals(TransactionStatus.SUCCESS, creditTransaction.getTransactionStatus());
+        debitTransaction.setTransactionStatus(TransactionStatus.FAILED);
+        creditTransaction.setTransactionStatus(TransactionStatus.FAILED);
+        assertEquals(TransactionStatus.FAILED, debitTransaction.getTransactionStatus());
+        assertEquals(TransactionStatus.FAILED, creditTransaction.getTransactionStatus());
     }
 
     @Test

@@ -7,9 +7,9 @@ import customer.Customer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import transaction.DepositTransaction;
+import transaction.CreditTransaction;
 import transaction.Transactable;
-import transaction.WithdrawTransaction;
+import transaction.DebitTransaction;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -48,7 +48,7 @@ class DatabaseTest {
 
     @Test
     void testTransactionsCaneBeAddedToTheDatabase() {
-        Transactable depositTransaction = new DepositTransaction(new SavingsAccount().getAccountNumber(), BigDecimal.TEN);
+        Transactable depositTransaction = new CreditTransaction(new SavingsAccount().getAccountNumber(), BigDecimal.TEN);
         database.addTransaction(depositTransaction);
         assertEquals(1, database.getAllTransaction().size());
         assertEquals(depositTransaction, database.getAllTransaction().get(0));
@@ -69,9 +69,9 @@ class DatabaseTest {
     @Test
     void testWeCanFindATransactionByItsTransactionId() {
         Account account = new SavingsAccount();
-        Transactable depositTransaction = new DepositTransaction(account.getAccountNumber(), BigDecimal.valueOf(100_000));
-        Transactable depositTransaction2 = new DepositTransaction(account.getAccountNumber(), BigDecimal.valueOf(200_000));
-        Transactable withdrawTransaction = new WithdrawTransaction(account.getAccountNumber(), BigDecimal.valueOf(150_000));
+        Transactable depositTransaction = new CreditTransaction(account.getAccountNumber(), BigDecimal.valueOf(100_000));
+        Transactable depositTransaction2 = new CreditTransaction(account.getAccountNumber(), BigDecimal.valueOf(200_000));
+        Transactable withdrawTransaction = new DebitTransaction(account.getAccountNumber(), BigDecimal.valueOf(150_000));
         database.addTransaction(depositTransaction);
         database.addTransaction(depositTransaction2);
         database.addTransaction(withdrawTransaction);
@@ -91,12 +91,12 @@ class DatabaseTest {
     @Test
     void testDeletingAnAccountDeletesAllAssociatedTransactions() {
         Account account = new SavingsAccount();
-        Transactable depositTransaction = new DepositTransaction(account.getAccountNumber(), BigDecimal.valueOf(100_000));
-        Transactable depositTransaction2 = new DepositTransaction(account.getAccountNumber(), BigDecimal.valueOf(200_000));
-        Transactable withdrawTransaction = new WithdrawTransaction(account.getAccountNumber(), BigDecimal.valueOf(150_000));
+        Transactable depositTransaction = new CreditTransaction(account.getAccountNumber(), BigDecimal.valueOf(100_000));
+        Transactable depositTransaction2 = new CreditTransaction(account.getAccountNumber(), BigDecimal.valueOf(200_000));
+        Transactable withdrawTransaction = new DebitTransaction(account.getAccountNumber(), BigDecimal.valueOf(150_000));
         Account account2 = new SavingsAccount();
-        Transactable depositTransaction3 = new DepositTransaction(account2.getAccountNumber(), BigDecimal.valueOf(100_000));
-        Transactable depositTransaction4 = new DepositTransaction(account2.getAccountNumber(), BigDecimal.valueOf(200_000));
+        Transactable depositTransaction3 = new CreditTransaction(account2.getAccountNumber(), BigDecimal.valueOf(100_000));
+        Transactable depositTransaction4 = new CreditTransaction(account2.getAccountNumber(), BigDecimal.valueOf(200_000));
         database.addAccount(account);
         database.addAccount(account2);
         database.addTransaction(depositTransaction);

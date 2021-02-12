@@ -1,7 +1,6 @@
 package transaction;
 
 import account.Account;
-import database.Database;
 import exceptions.InsufficientFundsException;
 
 import java.math.BigDecimal;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public class TransactionManager {
 
-    public WithdrawTransaction makeWithdrawal(Account withdrawingAccount, BigDecimal amountToWithdraw) throws InsufficientFundsException {
+    public DebitTransaction makeWithdrawal(Account withdrawingAccount, BigDecimal amountToWithdraw) throws InsufficientFundsException {
         BigDecimal currentAccountBalance = withdrawingAccount.getBalance();
         if (amountToWithdraw.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("You can only deposit Positive Amounts");
@@ -19,16 +18,16 @@ public class TransactionManager {
         if (amountToWithdraw.doubleValue() > currentAccountBalance.doubleValue()) {
             throw new InsufficientFundsException();
         }
-        WithdrawTransaction transaction = new WithdrawTransaction(withdrawingAccount.getAccountNumber(), amountToWithdraw);
+        DebitTransaction transaction = new DebitTransaction(withdrawingAccount.getAccountNumber(), amountToWithdraw);
         withdrawingAccount.addTransaction(transaction);
         return transaction;
     }
 
-    public DepositTransaction makeDeposit(Account depositingAccount, BigDecimal depositAmount) throws IllegalArgumentException {
+    public CreditTransaction makeDeposit(Account depositingAccount, BigDecimal depositAmount) throws IllegalArgumentException {
         if (depositAmount.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("You can only deposit Positive Amounts");
         }
-        DepositTransaction transaction = new DepositTransaction(depositingAccount.getAccountNumber(), depositAmount);
+        CreditTransaction transaction = new CreditTransaction(depositingAccount.getAccountNumber(), depositAmount);
         depositingAccount.addTransaction(transaction);
         return transaction;
     }

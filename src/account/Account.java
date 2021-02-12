@@ -34,12 +34,12 @@ public abstract class Account {
         BigDecimal balance;
         final double[] balanceValue = {0.0};
         transactions.stream()
-                .filter(transactionRecord -> transactionRecord instanceof DepositTransaction &&
+                .filter(transactionRecord -> transactionRecord instanceof CreditTransaction &&
                         transactionRecord.getTransactionStatus().equals(TransactionStatus.SUCCESS))
                 .forEach(transactable -> balanceValue[0] = balanceValue[0] + transactable.getTransactionAmount().doubleValue());
 
         transactions.stream()
-                .filter(transactionRecord -> transactionRecord instanceof WithdrawTransaction &&
+                .filter(transactionRecord -> transactionRecord instanceof DebitTransaction &&
                         transactionRecord.getTransactionStatus().equals(TransactionStatus.SUCCESS))
                 .forEach(transactable -> balanceValue[0] = balanceValue[0] - transactable.getTransactionAmount().doubleValue());
 
