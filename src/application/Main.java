@@ -108,7 +108,7 @@ public class Main {
     }
 
     private static void newCard() {
-        System.out.println("Cards are not available right now ");
+        System.out.println("");
     }
 
     private static void newIssue() {
