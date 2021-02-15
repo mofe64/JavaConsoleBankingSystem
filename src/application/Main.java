@@ -108,7 +108,7 @@ public class Main {
     }
 
     private static void newCard() {
-        System.out.println("");
+        System.out.println("Enter one for a debit card or two for a credit card");
     }
 
     private static void newIssue() {
