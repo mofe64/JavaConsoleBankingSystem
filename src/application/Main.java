@@ -109,6 +109,12 @@ public class Main {
 
     private static void newCard() {
         System.out.println("Enter one for a debit card or two for a credit card");
+        int userInput = scanner.nextInt();
+        if(userInput == 1){
+
+        } else {
+
+        }
     }
 
     private static void newIssue() {
